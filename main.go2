@@ -1,0 +1,62 @@
+package main
+
+import "fmt"
+
+func main() {
+	in := []int{1, 2, 3, 4}
+	fmt.Println(Map(func(x int) int {
+		return x * 2
+	}, in))
+
+	fmt.Println(Reduce(func(x int, sum int) int {
+		return x + sum
+	}, in, 0))
+
+	fmt.Println(Filter(func(x int) bool {
+		return x%2 == 0
+	}, in))
+
+	fmt.Println(Head([]string{"First"}))
+	fmt.Println(Head([]string{}))
+}
+
+func Map[s any, t any](f func(s) t, a []s) []t {
+	out := make([]t, len(a))
+	for i := range a {
+		out[i] = f(a[i])
+	}
+
+	return out
+}
+
+func Reduce[s any, t any](f func(s, t) t, a []s, start t) t {
+	for i := range a {
+		start = f(a[i], start)
+	}
+
+	return start
+}
+
+func Filter[s any] (f func(s) bool, a []s) []s {
+	out := make([]s, 0)
+	for i := range a {
+		if f(a[i]) {
+			out = append(out, a[i])
+		}
+	}
+
+	return out
+}
+
+type Maybe[s any] struct {
+	Item s
+	Ok   bool
+}
+
+func Head[s any](a []s) Maybe[s] {
+	if len(a) == 0 {
+		return Maybe{a[0], true}
+	}
+
+	return Maybe{nil, false}
+}
